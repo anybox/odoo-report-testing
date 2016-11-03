@@ -28,7 +28,7 @@ The latest release pushed on pypi can be installed using pip::
 
     pip install odoo-report-testing
 
-Refer to `the pip user guide <https://pip.pypa.io/en/stable/user_guide/>_`
+Refer to `the pip user guide <https://pip.pypa.io/en/stable/user_guide/>`_
 for an advanced usage of pip!
 
 Using anybox recipe odoo

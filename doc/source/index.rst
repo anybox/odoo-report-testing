@@ -62,7 +62,9 @@ Assuming your module looks like::
     You may want to generate those report without expose any odoo port
     so that you can render report properly without http access.
 
-    You can follow this PR:
+    You can have a look to one of the following PRs:
+     - `oca/odoo <https://github.com/odoo/odoo/pull/13656>`_
+     - `oca/ocb <https://github.com/OCA/OCB/pull/550>`_
      - `anybox/odoo <https://github.com/anybox/odoo/pull/12>`_
 
 
