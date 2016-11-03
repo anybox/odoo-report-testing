@@ -139,15 +139,15 @@ class pdftools(object):
 
     @staticmethod
     def generateReport(
-        cr, uid, model, report_service_name, ids, data={}, context=None,
+        cr, uid, model, report_service_name, ids, data=None, context=None,
         version7=False
     ):
         """Generate the report and return it as a tuple (result, format)
             where `result` is the report document and `format` is the file
             extension.
         """
-        if not isinstance(data, dict):
-            data = dict()
+        if not data:
+            data = {}
         data.update({'model': model})
         if not version7:
             try:

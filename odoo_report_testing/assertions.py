@@ -56,7 +56,8 @@ class OdooAssertions(object):
             self.fail(message % dict(ref=ref, compared=compared, ))
 
     def assertOdooReport(
-        self, reference, model, report_service_name, ids, data={}, context=None
+        self, reference, model, report_service_name, ids, data=None,
+        context=None
     ):
         """Generate report and compare to a reference file, test will failed if
         files are different, have a look close to the reference file you will
@@ -102,6 +103,8 @@ class OdooAssertions(object):
         :param data: extra data given to draw the report
         :param context: odoo context
         """
+        if not data:
+            data = {}
         if hasattr(self, 'env'):
             version7 = False
         else:
