@@ -1,4 +1,5 @@
 import os
+import subprocess
 from subprocess import call
 
 
@@ -37,7 +38,8 @@ class pdftools(object):
             compared, output_dir=output_dir
         )
         png_output = os.path.join(output_dir, filename + '_diff.png')
-        if call(['compare', '-metric', 'AE', ref, compared, png_output]) == 0:
+
+        if pdftools.files_equals(ref, compared, png_output):
             result.update(
                 {
                     'equal': True,
@@ -57,6 +59,24 @@ class pdftools(object):
                 }
             )
         return result
+
+    @staticmethod
+    def files_equals(ref, compared, output):
+        equal = False
+        p = subprocess.Popen(
+            ['compare', '-metric', 'AE', ref, compared, output],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        try:
+            p.wait()
+            _, err = p.communicate()
+            if err.strip().split('\n')[-1] == '0':
+                equal = True
+        except Exception as err:
+            p.kill()
+            p.wait()
+            raise RuntimeError("Something goes wrong while comparing file")
+        return equal
 
     @staticmethod
     def pdfdiff(ref, compared, output_dir=None):

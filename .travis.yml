@@ -8,6 +8,12 @@ cache:
 python:
   - "2.7"
 
+virtualenv:
+  system_site_packages: true
+
+services:
+  - postgresql
+
 addons:
   apt:
     packages:
@@ -16,37 +22,29 @@ addons:
       - python-simplejson
       - python-serial
       - python-yaml
-      - wkhtmltopdf
+      - python-pychart
       - pdftk
       - imagemagick
+      - wkhtmltopdf
+      - ttf-dejavu
+
+env:
+  global:
+    - VERSION="8.0"
+  matrix:
+    - VERSION="8.0"
 
 # set up an X server to run wkhtmltopdf.
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 
-env:
-  global:
-  - TESTS="0" LINT_CHECK="0" TRANSIFEX="0"
-
-  matrix:
-  - LINT_CHECK="1"
-#  - TESTS="1" ODOO_REPO="OCA/OCB" VERSION="7.0"
-  - TESTS="1" ODOO_REPO="OCA/OCB" VERSION="8.0"
-#  - TESTS="1" ODOO_REPO="OCA/OCB" VERSION="9.0"
-#  - TESTS="1" ODOO_REPO="OCA/OCB" VERSION="10.0"
-
-virtualenv:
-  system_site_packages: true
-
 install:
-  - git clone --depth=1 https://github.com/OCA/maintainer-quality-tools.git ${HOME}/maintainer-quality-tools
-  - export PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
-  - pip install nose
-  - travis_install_nightly
+  - compare -version
+  - python bootstrap.py
+  - bin/buildout -c buildout.cfg
+  - createdb ort
+  - bin/start_odoo -d ort --stop-after-init -i base
 
 script:
-  - travis_run_tests
-
-after_success:
-  - travis_after_tests_success
+  - bin/nosetests -d ort -- -s -v odoo_report_testing/tests/

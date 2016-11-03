@@ -75,4 +75,5 @@ Contents
     :maxdepth: 2
 
     install
+    contribute
     apidoc
