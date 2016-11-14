@@ -30,9 +30,10 @@ addons:
 
 env:
   global:
-    - VERSION="8.0"
+    - ODOO_VERSION="8.0"
   matrix:
-    - VERSION="8.0"
+    - ODOO_VERSION="8.0"
+    - ODOO_VERSION="7.0"
 
 # set up an X server to run wkhtmltopdf.
 before_install:
@@ -42,7 +43,7 @@ before_install:
 install:
   - compare -version
   - python bootstrap.py
-  - bin/buildout -c buildout.cfg
+  - bin/buildout -c buildout.v${ODOO_VERSION}.cfg
   - createdb ort
   - bin/start_odoo -d ort --stop-after-init -i base
 
