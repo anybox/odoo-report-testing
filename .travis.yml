@@ -32,6 +32,7 @@ env:
   global:
     - ODOO_VERSION="8.0"
   matrix:
+    - ODOO_VERSION="9.0"
     - ODOO_VERSION="8.0"
     - ODOO_VERSION="7.0"
 
