@@ -27,6 +27,7 @@ addons:
       - imagemagick
       - wkhtmltopdf
       - ttf-dejavu
+      - node-less  # lessc required from odoo9
 
 env:
   global:
