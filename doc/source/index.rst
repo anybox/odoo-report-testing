@@ -18,7 +18,7 @@ Requirements
 
 * ``imagemagick`` is used to compare 2 (one page) pdf bit to bit.
 * ``pdftk`` is used to split pdf page per page.
-* Install this package (with pip ``pip install odoo-report-testing``)
+* Install this package (with pip ``pip install odoo-report-testing``).
 
 Quickstart
 ==========
@@ -66,6 +66,35 @@ Assuming your module looks like::
      - `odoo/odoo <https://github.com/odoo/odoo/pull/13656>`_
      - `oca/ocb <https://github.com/OCA/OCB/pull/550>`_
      - `anybox/odoo <https://github.com/anybox/odoo/pull/12>`_
+
+
+How it works
+============
+
+When using ``assertOdooReport`` the library will:
+
+* Ask odoo to generates the report to test.
+* Save the generate pdf on the file system.
+* The generated report and the reference pdf are split page per page
+  using **pdftk**.
+* Each pdf page are compared using **compare** program from
+  **imagemagick**.
+* When a generated pdf page is different from its reference
+  2 images are generated:
+
+  - A ``.png`` image with red color for diff pixels.
+  - A ``.gif`` image with the generated page blinking (so only addition
+    are visible).
+  
+
+Settings
+========
+
+Mainly thinks for CI availaible environement variable:
+
+* **REPORT_TESTING_OUTPUT_DIR**: Directory where are saved all generated
+  files (report, diff files, ...), if not provide the directory of the
+  reference file is used.
 
 
 Contents
