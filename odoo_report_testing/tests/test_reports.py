@@ -1,11 +1,15 @@
 import os
-from odoo_report_testing.assertions import OdooAssertions
+
 try:
     # from odoo 7.0 to 9.0
     from openerp.tests.common import TransactionCase
+    from openerp.release import major_version
 except:
-    # from odoo 10.0
+    # odoo 10.0
     from odoo.tests.common import TransactionCase
+    from odoo.release import major_version
+
+from odoo_report_testing.assertions import OdooAssertions
 from odoo_report_testing.reports import pdftools
 
 
@@ -364,15 +368,20 @@ class TestReports(TransactionCase, OdooAssertions):
         self.clean(values)
 
     def test_generate_report(self):
-        if hasattr(self, 'env'):
-            module_id = self.env.ref('base.module_report_webkit').id
-            version7 = False
-        else:
-            module_id = self.ref('base.module_report_webkit')
+        version7 = False
+        model = 'ir.module.module'
+        report = 'ir.module.reference'
+        if major_version == '7.0':
             version7 = True
+            object_id = self.ref('base.module_report_webkit')
+        elif major_version == '8.0':
+            object_id = self.env.ref('base.module_report_webkit').id
+        else:  # version 9
+            object_id = self.env.ref('base.model_base_language_install').id
+            model = 'ir.model'
+            report = 'base.report_irmodeloverview'
         pdftools.generateReport(
-            self.cr, self.uid, 'ir.module.module', 'ir.module.reference',
-            [module_id], version7=version7
+            self.cr, self.uid, model, report, [object_id], version7=version7
         )
 
     def clean(self, values):

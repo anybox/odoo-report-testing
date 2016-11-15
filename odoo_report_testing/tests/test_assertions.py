@@ -1,12 +1,15 @@
 import os
 
-from odoo_report_testing.assertions import OdooAssertions
 try:
     # from odoo 7.0 to 9.0
     from openerp.tests.common import TransactionCase
+    from openerp.release import major_version
 except:
-    # from odoo 10.0
+    # odoo 10.0
     from odoo.tests.common import TransactionCase
+    from odoo.release import major_version
+
+from odoo_report_testing.assertions import OdooAssertions
 
 
 class TestAssertions(TransactionCase, OdooAssertions):
@@ -85,16 +88,23 @@ class TestAssertions(TransactionCase, OdooAssertions):
             )
 
     def test_assertOdooReport(self):
-        if hasattr(self, 'env'):
-            ref_file = 'technical_guide_report_webkit_v8.pdf'
-            webkit_module_id = self.env.ref('base.module_report_webkit').id
-        else:
+        model = 'ir.module.module'
+        report = 'ir.module.reference'
+        if major_version == '7.0':
             ref_file = 'technical_guide_report_webkit_v7.pdf'
-            webkit_module_id = self.ref('base.module_report_webkit')
+            object_id = self.ref('base.module_report_webkit')
+        elif major_version == '8.0':
+            object_id = self.env.ref('base.module_report_webkit').id
+            ref_file = 'technical_guide_report_webkit_v8.pdf'
+        else:  # version 9
+            object_id = self.env.ref('base.model_base_language_install').id
+            model = 'ir.model'
+            ref_file = 'model_base_language_install_v9.pdf'
+            report = 'base.report_irmodeloverview'
+
         ref_file = os.path.join(
             os.path.dirname(__file__), 'demo', ref_file
         )
         self.assertOdooReport(
-            ref_file, 'ir.module.module', 'ir.module.reference',
-            [webkit_module_id]
+            ref_file, model, report, [object_id]
         )
