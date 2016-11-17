@@ -15,6 +15,8 @@ services:
   - postgresql
 
 addons:
+  sources:
+    - pov-wkhtmltopdf
   apt:
     packages:
       - expect-dev  # provides unbuffer utility
