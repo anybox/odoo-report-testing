@@ -1,5 +1,7 @@
 language: python
 sudo: false
+dist: trusty
+group: beta
 cache:
   apt: true
   directories:
