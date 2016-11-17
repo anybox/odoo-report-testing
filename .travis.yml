@@ -16,7 +16,8 @@ services:
 
 addons:
   sources:
-    - pov-wkhtmltopdf
+    - sourceline: deb http://apt.anybox.fr/openerp anybox-wheezy contrib
+      key_url: http://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0xE38CEB07
   apt:
     packages:
       - expect-dev  # provides unbuffer utility
@@ -27,7 +28,7 @@ addons:
       - python-pychart
       - pdftk
       - imagemagick
-      - wkhtmltopdf
+      - wkhtmltox
       - ttf-dejavu
 
 env:
