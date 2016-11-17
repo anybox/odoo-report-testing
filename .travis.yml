@@ -27,7 +27,6 @@ addons:
       - imagemagick
       - wkhtmltopdf
       - ttf-dejavu
-      - node-less  # lessc required from odoo9
 
 env:
   global:
@@ -46,6 +45,8 @@ install:
   - compare -version
   - python bootstrap.py
   - bin/buildout -c buildout.v${ODOO_VERSION}.cfg
+  # required for odoo9 to find lessc
+  - export PATH=$PATH:$TRAVIS_BUILD_DIR/bin
   - createdb ort
   - bin/start_odoo -d ort --stop-after-init -i base
 
