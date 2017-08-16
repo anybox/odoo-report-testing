@@ -70,7 +70,7 @@ class pdftools(object):
         try:
             p.wait()
             _, err = p.communicate()
-            if err.strip().split('\n')[-1] == '0':
+            if err.decode('utf-8').strip().split('\n')[-1] == '0':
                 equal = True
         except Exception as err:
             p.kill()
