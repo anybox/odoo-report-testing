@@ -1,5 +1,7 @@
 language: python
 sudo: false
+dist: trusty
+group: beta
 cache:
   apt: true
   directories:
@@ -15,6 +17,8 @@ services:
   - postgresql
 
 addons:
+  sources:
+    - pov-wkhtmltopdf
   apt:
     packages:
       - expect-dev  # provides unbuffer utility
@@ -32,6 +36,7 @@ env:
   global:
     - ODOO_VERSION="8.0"
   matrix:
+    - ODOO_VERSION="9.0"
     - ODOO_VERSION="8.0"
     - ODOO_VERSION="7.0"
 
@@ -44,6 +49,8 @@ install:
   - compare -version
   - python bootstrap.py
   - bin/buildout -c buildout.v${ODOO_VERSION}.cfg
+  # required for odoo9 to find lessc
+  - export PATH=$PATH:$TRAVIS_BUILD_DIR/bin
   - createdb ort
   - bin/start_odoo -d ort --stop-after-init -i base
 
