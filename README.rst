@@ -22,10 +22,10 @@ It's encouraged to not install this tool and dependences in a production server.
 In order to properly compare images with ImageMagick make sure you have configure
 the following policy in ``/etc/ImageMagick-6/policy.xml``:
 
-```diff
--  <policy domain="coder" rights="none" pattern="PDF" />
-+  <policy domain="coder" rights="read | write" pattern="PDF" />
-```
+.. code::
+
+  -  <policy domain="coder" rights="none" pattern="PDF" />
+  +  <policy domain="coder" rights="read | write" pattern="PDF" />
 
 Taking this security issue in consideration: https://www.kb.cert.org/vuls/id/332928/ 
 
