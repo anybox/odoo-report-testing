@@ -1,7 +1,7 @@
 """High level Odoo assertions."""
 import os
 from .reports import pdftools
-
+from subprocess import call
 
 class OdooAssertions(object):
     """Mixin class providing assertion and helper methods to write tests.
@@ -56,8 +56,7 @@ class OdooAssertions(object):
             self.fail(message % dict(ref=ref, compared=compared, ))
 
     def assertOdooReport(
-        self, reference, model, report_service_name, ids, data=None,
-        context=None
+        self, reference, report_service_name, ids, data=None,
     ):
         """Generate report and compare to a reference file, test will failed if
         files are different, have a look close to the reference file you will
@@ -65,26 +64,24 @@ class OdooAssertions(object):
 
         here an example to test sale order quotation report::
 
-            # -*- coding: utf-8 -*-
             import os
-            from openerp.tests.common import TransactionCase
             from odoo_report_testing.assertions import OdooAssertions
+            from odoo.tests.common import TransactionCase
+            from odoo.tests import tagged
 
 
-            class TestSoReport(TransactionCase, OdooAssertions):
+            @tagged("post_install", "-at_install")
+            class TestReport(TransactionCase, OdooAssertions):
 
-                def test_simple_so_report(self):
+                def test_work_site_report(self):
                     self.assertOdooReport(
                         os.path.join(
                             os.path.dirname(__file__),
                             'expected_reports',
                             'test_so_report.pdf'
                         ),
-                        'sale.order',
                         'sale.report_saleorder',
-                        [self.ref('sale.sale_order_1')],
-                        data={},
-                        context=None
+                        [self.env.ref('sale.sale_order_1').id],
                     )
 
         .. warning::
@@ -97,7 +94,6 @@ class OdooAssertions(object):
 
         :param reference: Path to the report that the generated report should
                           looks like
-        :param model: fully qualified model name
         :param report_service_name: report name (without `report.`)
         :param ids: object used to generate the report
         :param data: extra data given to draw the report
@@ -105,18 +101,19 @@ class OdooAssertions(object):
         """
         if not data:
             data = {}
-        if hasattr(self, 'env'):
-            version7 = False
-        else:
-            version7 = True
         report, format = pdftools.generateReport(
-            self.cr, self.uid, model, report_service_name, ids, data=data,
-            context=context, version7=version7
+            self.env,
+            report_service_name,
+            ids,
+            data=data,
         )
         if format != 'pdf':
             raise Exception("AssertOdooReport work only with pdf files.")
         directory, filename = pdftools.outputs_env(reference)
         generated = os.path.join(directory, filename + '_generated.pdf')
+        # call(
+        #     ["curl", "http://localhost:8069/report/pdf/enrj_solaire.report_work_site/1", "-o", generated]
+        # )
         with open(generated, 'wb') as report_file:
             report_file.write(report)
         self.assertPdf(reference, generated)

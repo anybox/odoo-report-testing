@@ -88,7 +88,9 @@ class pdftools(object):
         required.
         """
         if not os.path.isfile(ref):
-            raise RuntimeError("ref file not found %r" % ref)
+            raise RuntimeError(
+                "ref file not found %r (while comparing with %r)" % (ref, compared)
+            )
         if not os.path.isfile(compared):
             raise RuntimeError("Compared file not found %r" % compared)
         output_dir, filename = pdftools.outputs_env(
@@ -159,31 +161,12 @@ class pdftools(object):
 
     @staticmethod
     def generateReport(
-        cr, uid, model, report_service_name, ids, data=None, context=None,
-        version7=False
+        env, report_service_name, ids, data=None,
     ):
         """Generate the report and return it as a tuple (result, format)
             where `result` is the report document and `format` is the file
             extension.
         """
-        if not data:
-            data = {}
-        data.update({'model': model})
-        if not version7:
-            try:
-                # version 10 and higher
-                from odoo.report import render_report
-            except:
-                # version 8 to 9
-                from openerp.report import render_report
-
-            return render_report(
-                cr, uid, ids, report_service_name, data, context=context
-            )
-        else:
-            # version 7
-            from openerp import netsvc
-            report_service = netsvc.LocalService(
-                'report.' + report_service_name
-            )
-            return report_service.create(cr, uid, ids, data, context=context)
+        report = env['ir.actions.report'].search([("report_name", "=", report_service_name)])
+        report.ensure_one() 
+        return report.with_context(force_report_rendering=True)._render_qweb_pdf(ids, data=data)
